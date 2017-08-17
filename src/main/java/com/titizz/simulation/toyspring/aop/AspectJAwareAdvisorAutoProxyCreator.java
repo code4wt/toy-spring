@@ -1,0 +1,54 @@
+package com.titizz.simulation.toyspring.aop;
+
+import com.titizz.simulation.toyspring.ioc.BeanPostProcessor;
+import com.titizz.simulation.toyspring.ioc.factory.BeanFactory;
+import com.titizz.simulation.toyspring.ioc.factory.BeanFactoryAware;
+import com.titizz.simulation.toyspring.ioc.xml.XmlBeanFactory;
+import org.aopalliance.intercept.MethodInterceptor;
+
+import java.util.List;
+
+/**
+ * Created by code4wt on 17/8/16.
+ */
+public class AspectJAwareAdvisorAutoProxyCreator implements BeanPostProcessor, BeanFactoryAware {
+
+    private XmlBeanFactory xmlBeanFactory;
+
+    @Override
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws Exception {
+        return bean;
+    }
+
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws Exception {
+        // 这里两个 if 判断很有必要，如果删除将会使出去进入死循环状态，最终导致 StackOverflowError 错误发生
+        if (bean instanceof AspectJExpressionPointcutAdvisor) {
+            return bean;
+        }
+        if (bean instanceof MethodInterceptor) {
+            return bean;
+        }
+
+        List<AspectJExpressionPointcutAdvisor> advisors =
+                xmlBeanFactory.getBeansForType(AspectJExpressionPointcutAdvisor.class);
+        for (AspectJExpressionPointcutAdvisor advisor : advisors) {
+            if (advisor.getPointcut().getClassFilter().matchers(bean.getClass())) {
+                ProxyFactory advisedSupport = new ProxyFactory();
+                advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
+                advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
+
+                TargetSource targetSource = new TargetSource(bean, bean.getClass(), bean.getClass().getInterfaces());
+                advisedSupport.setTargetSource(targetSource);
+                return advisedSupport.getProxy();
+            }
+        }
+
+        return bean;
+    }
+
+    @Override
+    public void setBeanFactory(BeanFactory beanFactory) throws Exception {
+        xmlBeanFactory = (XmlBeanFactory) beanFactory;
+    }
+}
