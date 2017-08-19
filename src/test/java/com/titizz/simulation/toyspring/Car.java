@@ -62,7 +62,7 @@ public class Car {
                 ", length='" + length + '\'' +
                 ", width='" + width + '\'' +
                 ", height='" + height + '\'' +
-                ", wheel=" + wheel +
+                ", \nwheel=" + wheel +
                 '}';
     }
 }

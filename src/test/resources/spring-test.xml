@@ -1,0 +1,14 @@
+<beans xmlns="http://www.springframework.org/schema/beans">
+    <bean id="wheel" class="com.titizz.simulation.toyspring.Wheel">
+        <property name="brand" value="Michelin" />
+        <property name="specification" value="265/60 R18" />
+    </bean>
+
+    <bean id="car" class="com.titizz.simulation.toyspring.Car">
+        <property name="name" value="Mercedes Benz G 500"/>
+        <property name="length" value="4717mm"/>
+        <property name="width" value="1855mm"/>
+        <property name="height" value="1949mm"/>
+        <property name="wheel" ref="wheel"/>
+    </bean>
+</beans>
