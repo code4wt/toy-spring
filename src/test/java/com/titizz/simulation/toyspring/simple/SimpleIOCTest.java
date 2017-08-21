@@ -11,7 +11,7 @@ public class SimpleIOCTest {
 
     @Test
     public void getBean() throws Exception {
-        String location = SimpleIOC.class.getClassLoader().getResource("spring-test.xml").getFile();
+        String location = SimpleIOC.class.getClassLoader().getResource("toy-spring-ioc.xml").getFile();
         SimpleIOC bf = new SimpleIOC(location);
         Wheel wheel = (Wheel) bf.getBean("wheel");
         System.out.println(wheel);

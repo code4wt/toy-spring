@@ -44,16 +44,28 @@ public class AspectJExpressionPointcut implements Pointcut, ClassFilter, MethodM
                 .getPointcutParserSupportingSpecifiedPrimitivesAndUsingContextClassloaderForResolution(supportedPrimitives);
     }
 
+    /**
+     * 使用 AspectJ Expression 匹配类
+     * @param targetClass
+     * @return成功匹配返回 true，否则返回 false
+     */
     @Override
-    public Boolean matchers(Class targetClass) throws Exception {
+    public Boolean matchers(Class targetClass) {
         checkReadyToMatche();
         return pointcutExpression.couldMatchJoinPointsInType(targetClass);
     }
 
+    /**
+     * 使用 AspectJ Expression 匹配方法
+     * @param method
+     * @param targetClass
+     * @return 成功匹配返回 true，否则返回 false
+     */
     @Override
     public Boolean matchers(Method method, Class targetClass) {
         checkReadyToMatche();
         ShadowMatch shadowMatch = pointcutExpression.matchesMethodExecution(method);
+
         // Special handling for this, target, @this, @target, @annotation
         // in Spring - we can optimize since we know we have exactly this class,
         // and there will never be matching subclass at runtime.
